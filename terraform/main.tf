@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "ec2-key-${formatdate("YYYYMMDD", timestamp())}"
-  public_key = file(" C:\Users\THARVESH/.ssh/id_rsa.pub")
+  public_key = file("C:/Users/THARVESH/.ssh/id_rsa.pub")
 }
 
 resource "aws_security_group" "app_sg" {
