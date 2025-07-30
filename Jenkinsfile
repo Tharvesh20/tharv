@@ -3,15 +3,15 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'tharvesh20/flask-docker-app1'
-        AWS_REGION = 'us-east-1'
+        AWS_REGION = 'eu-east-1'
     }
 
     stages {
 
         stage('Clone Repository') {
             steps {
-               git 'https://github.com/Tharvesh20/tharv.git'
-            } 
+                git 'https://github.com/Tharvesh20/tharv.git'
+            }
         }
 
         stage('Build Docker Image') {
@@ -39,19 +39,24 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
+                    bat 'terraform --version'
                     bat 'terraform init'
                 }
             }
         }
 
-        stage('Terraform Apply') {
+    
+        stage('Terraform Init and Apply') {
             steps {
                 dir('terraform') {
-                    bat 'terraform apply -auto-approve'
+                    withCredentials([usernamePassword(credentialsId: 'aws-jenkins-user', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        bat 'terraform init'
+                        bat 'terraform apply -auto-approve'
+                    }
                 }
             }
         }
-
+    
         stage('Deployment Verification') {
             steps {
                 echo "Waiting for EC2 instance to initialize..."
